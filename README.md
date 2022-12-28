@@ -1,2 +1,2 @@
-# era-1
+# era 1
 online strategy game in development
