@@ -1,0 +1,16 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/*
+    do we want the canvas to be larger?
+*/
+canvas {
+    width: 600px;
+    height: 600px;
+}
