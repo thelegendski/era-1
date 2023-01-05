@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<!--
+    player:
+        deploy:
+            SPACE to AUTO-DEPLOY [keyReleased]
+            SHIFT-CLICK to remove troops
+            CLICK to deploy
+        attack:
+            SPACE to auto-attack [keyReleased]
+            CLICK to attack
+-->
+<html>
+    <!-- stylin' -->
+    <head>
+        <meta charset="utf-8">
+        <title>war</title>
+        <style type = 'text/css'>
+            body {
+                margin: 0;
+                overflow: hidden;
+            }
+            canvas {
+                width: 600px;
+                height: 600px;
+            }
+        </style>
+    </head>
+    <!-- the meat -->
+    <body>
+        <!-- canvas -->
+        <canvas width = "600" height = "600"></canvas>
+        
+        <!-- imported scripts [they're mine lol] -->
+        <script src = "https://cdn.jsdelivr.net/gh/thelegendski/ski.js/main.js"></script>
+        <script src = "https://cdn.jsdelivr.net/gh/thelegendski/ski.js/addons/print.js"></script>
+        
+        <!-- the game -->
+        <script type = 'module'>
+            //returns sum of an array
+            Array.prototype.sum = function(){
+                return this.reduce((a, b) => a + b)
+            }
+            //sets total value of an array
+            Array.prototype.set = function(num, MAX){
+                while(this.sum() !== num){
+                    let i = random(this.length) | 0
+                    this[i] = constrain(Math.abs(this[i] + (this.sum() > num ? -1 : 1)), 1, MAX)
+                }
+            }
+            //true shuffle
+            Array.prototype.shuffle = function(){
+                let i = this.length
+                while(i > 0){
+                    let I = random(this.length) | 0
+                    i--
+                    [this[i], this[I]] = [this[I], this[i]]
+                }
+            }
+            
+            //constants
+            const SIZE = 50
+            
+            //"globals"
+            let territories
+            
+            class CPU {
+                constructor() {
+                    this.free = 5
+                    this.offense = []
+                    this.needy = []
+                }
+                take () {
+                    
+                }
+                deploy () {
+                    
+                }
+                attack () {
+                    this.territories[0].attack()
+                }
+                all () {
+                    //find our territories
+                    this.territories = territories.filter(t => t.empire === this.empire)
+                    //reassess position [
+                    this.territories.forEach(t => t.home())
+                    this.offense = this.territories.filter(t => t.troops > 1 && t.advantage > 0).sort((a, b) => b.advantage - a.advantage)
+                    this.needy = this.territories.filter(t => t.advantage < 0 && t.enemies.length > 0).sort((a, b) => a.advantage - b.advantage)
+                    //]
+                }
+            }
+            
+            class Territory {
+                constructor (x, y, empire) {
+                    this.x = x
+                    this.y = y
+                    this.enemies = []
+                    this.empire = empire
+                    this.target = null
+                    this.troops = random(1, 10) | 0
+                    this.advantage = 0
+                    this.spare = 0
+                    this.FIND = false
+                    this.ATTACK = false
+                }
+                find () {
+                    territories.forEach(t => 
+                    //if they are our enemy
+                    t.empire !== this.empire &&
+                    //and they are adjacent to us
+                    dist(this.x, this.y, t.x, t.y) <= SIZE * 1.5 && 
+                    //and they have troops to defend
+                    t.troops > 0 && 
+                    //add them to our list of enemies
+                    this.enemies.push(t))
+                }
+                search () {
+                    this.enemies.sort((a, b) => a.troops - b.troops)
+                    this.target = this.enemies[0]
+                    this.advantage = this.troops - this.enemies[this.enemies.length - 1].troops
+                }
+                home () {
+                    this.reset()
+                    this.find()
+                    this.enemies.length > 0 && this.search()
+                }
+                attack () {
+                    
+                    this.ATTACK = false
+                }
+                all () {
+                    this.index = territories.findIndex(t => t.x === this.x && t.y === this.y)
+                    this.home() //may need conditional to improve performance where if a territory is taken over, all adjacent blocks need to reset.
+                }
+            }
+            
+            
+            
+            println(1)
+            
+        </script>
+    </body>
+</html>
+<!-- done -->
